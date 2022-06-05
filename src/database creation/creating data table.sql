@@ -1,6 +1,6 @@
--------------------------------------------------------------------------
------ make sure that there are no existing table with the same name -----
--------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+----- make sure that there are no existing table with the same name -----------
+-------------------------------------------------------------------------------
 
 DROP TABLE IF EXISTS adresses;
 DROP TABLE IF EXISTS department;
@@ -18,11 +18,12 @@ DROP TABLE IF EXISTS information_exchange_er;
 DROP TABLE IF EXISTS information_exchange_es;
 DROP TABLE IF EXISTS information_exchange_sc;
 
--------------------------------------------------------------------------
------ creating tables ---------------------------------------------------
--------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+----- creating tables ---------------------------------------------------------
+-------------------------------------------------------------------------------
 
------ address------------------------
+----- address------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS adresses (
   address_id INT NOT NULL,
   country VARCHAR(45) NOT NULL,
@@ -33,7 +34,9 @@ CREATE TABLE IF NOT EXISTS adresses (
   PRIMARY KEY (address_ID));
 
 
------ department ----------------------
+----- department ------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS department (
   department_ID INT NOT NULL,
   department_name VARCHAR(45) NOT NULL,
@@ -46,7 +49,9 @@ CREATE TABLE IF NOT EXISTS department (
   ON UPDATE CASCADE);
   
 
------ 
+----- employee --------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS employee (
   employee_ID INT NOT NULL,
   first_name VARCHAR(20) NOT NULL,
@@ -62,6 +67,9 @@ CREATE TABLE IF NOT EXISTS employee (
     ON UPDATE CASCADE);
 	
 
+----- customer --------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS customer (
   customer_ID INT NOT NULL,
   first_name VARCHAR(20) NOT NULL,
@@ -70,6 +78,10 @@ CREATE TABLE IF NOT EXISTS customer (
   email VARCHAR(45) NOT NULL,
   PRIMARY KEY (customer_ID) );
 
+
+----- giftbox ---------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS giftbox (
   giftbox_ID INT NOT NULL,
   giftbox_name VARCHAR(45) NOT NULL,
@@ -77,6 +89,9 @@ CREATE TABLE IF NOT EXISTS giftbox (
   giftbox_amount INT NOT NULL,
   PRIMARY KEY (giftbox_ID) );
 
+
+----- order -----------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS order_in (
   order_ID INT NOT NULL,
@@ -94,7 +109,11 @@ CREATE TABLE IF NOT EXISTS order_in (
     REFERENCES giftbox (giftbox_ID)
     ON DELETE RESTRICT
     ON UPDATE CASCADE);
-	
+
+
+----- supplier --------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS supplier (
   supplier_ID INT NOT NULL,
   supplier_name VARCHAR(45) NOT NULL,
@@ -103,6 +122,10 @@ CREATE TABLE IF NOT EXISTS supplier (
   PRIMARY KEY (supplier_ID) );
   
  
+
+------ repair shop ----------------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS repairshop (
   repairshop_ID INT NOT NULL,
   repairshop_name VARCHAR(45) NOT NULL,
@@ -110,6 +133,10 @@ CREATE TABLE IF NOT EXISTS repairshop (
   email VARCHAR(45) NOT NULL,
   PRIMARY KEY (repairshop_ID) );
 
+
+
+----- bike ------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS bike (
   bike_ID INT NOT NULL,
@@ -137,6 +164,9 @@ CREATE TABLE IF NOT EXISTS bike (
     ON UPDATE CASCADE);
 
 
+----- table for M:N relationship between employee and repair shop -----------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS information_exchange_er (
   employee_ID INT NOT NULL,
   repairshop_ID INT NOT NULL,
@@ -150,6 +180,9 @@ CREATE TABLE IF NOT EXISTS information_exchange_er (
     REFERENCES repairshop (repairshop_ID)
     ON UPDATE CASCADE);
 	
+
+----- table for M:N relationship between employee and supplier --------------
+-----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS information_exchange_es (
   employee_ID INT NOT NULL,
@@ -165,6 +198,9 @@ CREATE TABLE IF NOT EXISTS information_exchange_es (
     ON UPDATE CASCADE);
 	
 
+----- table for M:N relationship bewtween employee and customer -------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS information_exchange_sc (
   customer_ID INT NOT NULL,
   employee_ID INT NOT NULL,
@@ -178,14 +214,22 @@ CREATE TABLE IF NOT EXISTS information_exchange_sc (
     REFERENCES employee (employee_ID)
     ON UPDATE CASCADE);
 	
-	
+
+----- insurance company -----------------------------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS insurance_company (
   insurrance_company_ID INT NOT NULL,
   company_name VARCHAR(45) NOT NULL,
   constact_person VARCHAR(45) NOT NULL,
   email VARCHAR(45),
   PRIMARY KEY (insurrance_company_ID));
-  
+
+
+
+----- individual insurance number for bikes ---------------------------------
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS bike_individual_insurance (
   insurance_number INT NOT NULL,
   bike_ID INT NOT NULL,
@@ -201,7 +245,12 @@ CREATE TABLE IF NOT EXISTS bike_individual_insurance (
     REFERENCES insurance_company (insurrance_company_ID)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
-	
+
+
+
+----- table for M:N relationship between employee and insurance company -----
+-----------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS information_exchange_ei (
   employee_ID INT NOT NULL,
   insurrance_company_ID INT NOT NULL,
