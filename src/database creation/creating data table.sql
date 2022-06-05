@@ -2,7 +2,7 @@
 ----- make sure that there are no existing table with the same name -----------
 -------------------------------------------------------------------------------
 
-DROP TABLE IF EXISTS adresses;
+DROP TABLE IF EXISTS addresses;
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS customer;
@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS information_exchange_sc;
 
 ----- address------------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS adresses 
+CREATE TABLE IF NOT EXISTS addresses 
 (
   address_id   SERIAL       UNIQUE      NOT NULL,
   country      VARCHAR(45)              NOT NULL,
@@ -42,14 +42,14 @@ CREATE TABLE IF NOT EXISTS adresses
 
 CREATE TABLE IF NOT EXISTS department 
 (
-  department_ID      SERIAL       UNIQUE     NOT NULL,
-  department_name    VARCHAR(45)             NOT NULL,
-  office_phonenumber VARCHAR(15)             NOT NULL,
-  adresses_ID        INT,
+  department_ID       SERIAL       UNIQUE     NOT NULL,
+  department_name     VARCHAR(45)             NOT NULL,
+  office_phonenumber  VARCHAR(15)             NOT NULL,
+  addresses_ID        INT,
 
   PRIMARY KEY (department_ID),
-  FOREIGN KEY (adresses_ID)
-  REFERENCES adresses (address_ID) 
+  FOREIGN KEY (addresses_ID)
+  REFERENCES addresses (address_ID) 
   ON DELETE SET NULL 
   ON UPDATE CASCADE
 );
@@ -297,7 +297,7 @@ CREATE TABLE IF NOT EXISTS information_exchange_ei
 (
   employee_ID            INT   NOT NULL,
   insurrance_company_ID  INT   NOT NULL,
-  
+
   PRIMARY KEY (employee_ID, insurrance_company_ID),
   CONSTRAINT fk_employee_insurance_company_employee
     FOREIGN KEY (employee_ID)
