@@ -21,27 +21,27 @@ VALUES    ('Marketing', '17443 28344', '1' ),
 -------------------------------------------------------------------------------
 ----- Inserting employee data -------------------------------------------------
 -------------------------------------------------------------------------------
-INSERT INTO employee (first_name, last_name, sex, email, department_ID)
-VALUES    ('Max', 'Mustermann', 'male', 'Max.mustermann@rbike.de', '1'),
-          ('Lena', 'Benner', 'female', 'Lena.benner@rbike.de', '1'),
-          ('Andreas', 'Lust', 'male', 'Andreas.lust@rbike.de', '2'),
-          ('Luis', 'Stein', 'male', 'Luis.stein@rbike.de', '3'),
-          ('Anna', 'Krug', 'female', 'Anna.krug@rbike.de', '4'),
-          ('Uwe', 'Kling', 'male', 'Uwe.kling@rbike.de', '5'),
-          ('Julian', 'Frey', 'male', 'Julian.frey@rbike.de', '5'),
-          ('Anika', 'Bauer', 'female', 'Anika.bauer@rbike', '3');
+INSERT INTO employee (first_name, last_name, sex, age, email, income_per_year, department_ID)
+VALUES    ('Max', 'Mustermann', 'male', 30, 'Max.mustermann@rbike.de',52000, '1'),
+          ('Lena', 'Benner', 'female', 24,'Lena.benner@rbike.de',40000 ,'1'),
+          ('Andreas', 'Lust', 'male', 20, 'Andreas.lust@rbike.de', 30000,'2'),
+          ('Luis', 'Stein', 'male', 35,'Luis.stein@rbike.de',37000, '3'),
+          ('Anna', 'Krug', 'female', 33,'Anna.krug@rbike.de',50000, '4'),
+          ('Uwe', 'Kling', 'male', 23,'Uwe.kling@rbike.de', 32000, '5'),
+          ('Julian', 'Frey', 'male', 19, 'Julian.frey@rbike.de', 23000, '5'),
+          ('Anika', 'Bauer', 'female', 29,'Anika.bauer@rbike', 38000,'3');
 
 
 -------------------------------------------------------------------------------
 ----- Inserting customer data -------------------------------------------------
 -------------------------------------------------------------------------------
-INSERT INTO customer (first_name, last_name, sex, email)
-VALUES    ('Lucas', 'Lanz', 'male', 'Lucas.lanz@gmail.com'),
-          ('Matze', 'Fischer', 'male', 'Matze.fischer@yahoo.com'),
-          ('Lias', 'Musster', 'male', 'Liasccdv@gmail.com'),
-          ('Laura', 'Engel', 'female', 'Laurii@yas.de'),
-          ('Miriam', 'Teufel', 'female', 'Miriam.teufel@web.de'),
-          ('Luisa', 'Menual', 'female', 'lulu@web.de');
+INSERT INTO customer (first_name, last_name, sex, age, email)
+VALUES    ('Lucas', 'Lanz', 'male', 25,'Lucas.lanz@gmail.com'),
+          ('Matze', 'Fischer', 'male', 33, 'Matze.fischer@yahoo.com'),
+          ('Lias', 'Musster', 'male', 40, 'Liasccdv@gmail.com'),
+          ('Laura', 'Engel', 'female', 19, 'Laurii@yas.de'),
+          ('Miriam', 'Teufel', 'female',50, 'Miriam.teufel@web.de'),
+          ('Luisa', 'Menual', 'female', 44, 'lulu@web.de');
           
 
 -------------------------------------------------------------------------------
@@ -87,16 +87,16 @@ VALUES    ('Repair Mannheim', 'Joshua Müller', 'Joshua.Müller@rapairmannheim.c
 -------------------------------------------------------------------------------
 ----- Inserting bike data --------------------------------------------------
 -------------------------------------------------------------------------------
-INSERT INTO bike (brand, model, repair_status, order_ID, repairshop_ID, supplier_ID)
-VALUES    ('BIker', 'street', 'false', 1, 1, 2),
-          ('BIker', 'street', 'false', 2, 1, 3),
-          ('4BIKES', 'mountain', 'false', 3, 2, 1),
-          ('4Bikes', 'street', 'false', NULL, 2, 1),
-          ('trueBike', 'mountain', 'true', NULL, 1, 1),
-          ('trueBike', 'mountain', 'false', 4, 1, 3),
-          ('trueBike', 'street', 'false', 5, 2, 3),
-          ('trueBike', 'street', 'false', 6, 2, 3),
-          ('nEXtBi', 'allrounder', 'true', NULL, 2, 2); 
+INSERT INTO bike (brand, model, rent_fee_per_day, repair_status, order_ID, repairshop_ID, supplier_ID)
+VALUES    ('BIker', 'street',23 ,'false', 1, 1, 2),
+          ('BIker', 'street', 23,'false', 2, 1, 3),
+          ('4BIKES', 'mountain', 40, 'false', 3, 2, 1),
+          ('4Bikes', 'street', 25 ,'false', NULL, 2, 1),
+          ('trueBike', 'mountain', 35 ,'true', NULL, 1, 1),
+          ('trueBike', 'mountain', 35,'false', 4, 1, 3),
+          ('trueBike', 'street', 30 ,'false', 5, 2, 3),
+          ('trueBike', 'street', 33,'false', 6, 2, 3),
+          ('nEXtBi', 'allrounder', 50 ,'true', NULL, 2, 2); 
 
 
 -------------------------------------------------------------------------------

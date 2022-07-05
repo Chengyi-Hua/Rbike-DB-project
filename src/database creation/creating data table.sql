@@ -60,12 +60,14 @@ CREATE TABLE IF NOT EXISTS department
 
 CREATE TABLE IF NOT EXISTS employee 
 (
-  employee_ID   SERIAL      UNIQUE   NOT NULL,
-  first_name    VARCHAR(20)          NOT NULL,
-  last_name     VARCHAR(20)          NOT NULL,
-  sex           VARCHAR              NOT NULL,
-  email         VARCHAR(45)          NOT NULL,
-  department_ID INT,
+  employee_ID            SERIAL      UNIQUE   NOT NULL,
+  first_name             VARCHAR(20)          NOT NULL,
+  last_name              VARCHAR(20)          NOT NULL,
+  sex                    VARCHAR              NOT NULL,
+  age                    INT                  NOT NUlL,
+  email                  VARCHAR(45)          NOT NULL,
+  income_per_year        INT                  NOT NULL,
+  department_ID          INT,
 
   PRIMARY KEY (employee_ID),
   CONSTRAINT fk_employee_department
@@ -85,6 +87,7 @@ CREATE TABLE IF NOT EXISTS customer
   first_name     VARCHAR(20)          NOT NULL,
   last_name      VARCHAR(20)          NOT NULL,
   sex            VARCHAR              NOT NULL,
+  age            INT                  NOT NULL,
   email          VARCHAR(45)          NOT NULL,
 
   PRIMARY KEY (customer_ID)
@@ -164,13 +167,14 @@ CREATE TABLE IF NOT EXISTS repairshop
 
 CREATE TABLE IF NOT EXISTS bike 
 (
-  bike_ID       SERIAL      UNIQUE    NOT NULL,
-  brand         VARCHAR(45)           NOT NULL,
-  model         VARCHAR(45)           NOT NULL,
-  repair_status VARCHAR               NOT NULL    DEFAULT false,
-  order_ID      INT,
-  repairshop_ID INT,
-  supplier_ID   INT,
+  bike_ID            SERIAL      UNIQUE    NOT NULL,
+  brand              VARCHAR(45)           NOT NULL,
+  model              VARCHAR(45)           NOT NULL,
+  rent_fee_per_day   INT                   NOT NULL,
+  repair_status      VARCHAR               NOT NULL    DEFAULT false,
+  order_ID           INT,
+  repairshop_ID      INT,
+  supplier_ID        INT,
 
   PRIMARY KEY (bike_ID),
   CONSTRAINT fk_bike_order
