@@ -312,3 +312,65 @@ CREATE TABLE IF NOT EXISTS information_exchange_ei
     REFERENCES insurance_company (insurrance_company_ID)
     ON UPDATE CASCADE
 );
+
+
+CREATE TABLE IF NOT EXISTS employee_audit
+( 
+  last_name         VARCHAR(20)    NOT NULL,
+  first_name        VARCHAR(20)    NOT NULL,
+  UserName          VARCHAR(20)    NOT NULL,
+  EmpAdditionTime   VARCHAR(20)    NOT NULL
+);
+
+-----------------------------------------------------------------------------
+----- creating views --------------------------------------------------------
+-----------------------------------------------------------------------------
+----- view: Departmentoverview ----------------------------------------------
+
+DROP VIEW IF EXISTS departmentoverview;
+CREATE VIEW departmentoverview AS
+  SELECT department_id, department_name, office_phonenumber
+  FROM department;
+
+
+----- metrialized view: bikeExtended ----------------------------------------
+-----------------------------------------------------------------------------
+DROP MATERIALIZED VIEW IF EXISTS bikeextended;
+CREATE MATERIALIZED VIEW bikeextended AS
+SELECT  bike.bike_id, 
+        bike.model, 
+        bike.brand , 
+        bike.repair_status, 
+        repairshop.repairshop_name,
+		    supplier.supplier_name,
+        bike_individual_insurance.insurance_number
+FROM bike
+LEFT JOIN repairshop ON (bike.repairshop_id = repairshop.repairshop_id)
+LEFT JOIN supplier ON (bike.supplier_id = supplier.supplier_id)
+LEFT JOIN bike_individual_insurance ON (bike.bike_id = bike_individual_insurance.bike_id)
+GROUP BY bike.bike_id, repairshop.repairshop_id, supplier.supplier_id,  bike_individual_insurance.insurance_number;
+
+
+-----------------------------------------------------------------------------
+----- creating triggers -----------------------------------------------------
+----- it will document all new employees ------------------------------------
+-----------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION employee_insert_trigger_fnc()
+RETURNS trigger AS
+$$
+BEGIN
+  INSERT INTO employee_audit ( last_name, first_name, UserName ,EmpAdditionTime)
+  VALUES(NEW.last_name,NEW.first_name,current_user,current_date);
+RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+
+
+CREATE TRIGGER employee_insert_trigger
+AFTER INSERT
+ON employee
+FOR EACH ROW
+EXECUTE PROCEDURE employee_insert_trigger_fnc();
