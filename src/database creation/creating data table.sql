@@ -316,10 +316,18 @@ CREATE TABLE IF NOT EXISTS information_exchange_ei
 
 CREATE TABLE IF NOT EXISTS employee_audit
 ( 
-  last_name         VARCHAR(20)    NOT NULL,
-  first_name        VARCHAR(20)    NOT NULL,
-  UserName          VARCHAR(20)    NOT NULL,
-  EmpAdditionTime   VARCHAR(20)    NOT NULL
+  edit_ID           SERIAL       UNIQUE  NOT NULL,
+  employee_ID       INT                  NOT NULL,
+  last_name         VARCHAR(20)          NOT NULL,
+  first_name        VARCHAR(20)          NOT NULL,
+  UserName          VARCHAR(20)          NOT NULL,
+  EmpAdditionTime   VARCHAR(20)          NOT NULL,
+  PRIMARY KEY (edit_ID),
+  CONSTRAINT fk_employee_insurance_company_employee
+  FOREIGN KEY (employee_ID)
+  REFERENCES employee (employee_ID)
+  ON UPDATE CASCADE
+
 );
 
 -----------------------------------------------------------------------------
@@ -360,8 +368,8 @@ CREATE OR REPLACE FUNCTION employee_insert_trigger_fnc()
 RETURNS trigger AS
 $$
 BEGIN
-  INSERT INTO employee_audit ( last_name, first_name, UserName ,EmpAdditionTime)
-  VALUES(NEW.last_name,NEW.first_name,current_user,current_date);
+  INSERT INTO employee_audit ( employee_ID, last_name, first_name, UserName ,EmpAdditionTime)
+  VALUES(NEW.employee_ID,NEW.last_name,NEW.first_name,current_user,current_date);
 RETURN NEW;
 END;
 $$
