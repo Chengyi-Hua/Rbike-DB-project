@@ -382,3 +382,10 @@ AFTER INSERT
 ON employee
 FOR EACH ROW
 EXECUTE PROCEDURE employee_insert_trigger_fnc();
+
+
+-----------------------------------------------------------------------------
+----- creating secondary index ----------------------------------------------
+-----------------------------------------------------------------------------
+
+CREATE INDEX payment_method ON order_in(payment);
