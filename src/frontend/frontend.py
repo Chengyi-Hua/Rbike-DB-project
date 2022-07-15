@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import plotly.express as px
+import plotly.graph_objects as go
 import datetime as dt
 import time
 import pandas as pd 
@@ -109,7 +110,6 @@ header = {
 
 searchBox = {
     'width': '99.3%',
-    'height': '100px',
     'margin-top':'10px',
     'background-color':'#dedede',
     'borderWidth': '1px',
@@ -170,12 +170,12 @@ button_style = {
     'color':'#00308F',
     'margin-top':'10px'
 }
-#hostname = 'db'
-hostname = 'localhost'
+hostname = 'db'
+#hostname = 'localhost'
 database = 'rbike'
 username = 'postgres'
 pwd = 'admin'
-port_id = 5433
+port_id = 5432
 conn= None
 cur= None
 
@@ -196,7 +196,7 @@ try:
 
     cur.execute('SELECT * FROM bike')
     data = cur.fetchall()
-    df_bike = pd.DataFrame(data=data, columns=['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repair_shop_id','supplier_id'])
+    df_bike = pd.DataFrame(data=data, columns=['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repairshop_id','supplier_id'])
     #print(df_bike)
 
     cur.execute('SELECT * FROM order_in')
@@ -237,6 +237,22 @@ finally:
     if cur is not None:
         cur.close()
         conn.close()
+################################################################################################################################################################################################
+def connect():
+    conn = psycopg2.connect(
+        host=hostname,
+        dbname=database,
+        user=username,
+        password=pwd,
+        port=port_id)
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    return conn, cur
+
+def disconnect(conn,cur):
+    cur.close()
+    conn.close()
+
 
 def maybeMakeNumber(s):
     """Returns a string 's' into a integer if possible, a float if needed or
@@ -318,7 +334,7 @@ def make_ins_del_list(rows, df, unique_factor):
     else:
         return [],[]
 
-
+#################################################################################################################################################################################################
 app = JupyterDash(__name__)
 app.layout = html.Div(children=[
     html.H1(children=['RBike Database Management System'], style=header),
@@ -338,12 +354,14 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
+                            filter_action='native',
                             id='bike_tbl'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_bike', n_clicks=0, style=button_style),
                     html.Button('Save', id='save_to_postgres_bike', n_clicks=0, style=button_style),
-                    html.Div([],'placeholder_bike')
+                    html.Div([],'placeholder_bike'),
+                    dcc.Graph(id='bike_graph')
                 ]
             ),
             dcc.Tab(
@@ -360,12 +378,15 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
+                            filter_action = 'native',
                             id='customer_tbl'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_customer', n_clicks=0, style=button_style),
                     html.Button('Save', id='save_to_postgres_customer', n_clicks=0, style=button_style),
-                    html.Div([],'placeholder_customer')
+                    html.Div([],'placeholder_customer'),
+                    dcc.Graph(id='customer_graph'),
+                    dcc.Graph(id='customer_graph_2')
                 ]
             ),
             dcc.Tab(
@@ -374,12 +395,6 @@ app.layout = html.Div(children=[
                 style=tab_style,
                 selected_style=tab_selected_style3,
                 children= [
-                    html.Div(style= searchBox,children=[
-                        html.H5(children=['Search Box'],style={'margin-top':'-2px'}),
-                        dcc.Input(placeholder='what are you looking for?', type='text',id='input 1'),
-                        dcc.Input(placeholder='what are you looking for?', type='text',id='input 2'),
-                        html.P(children='hello',style={'margin-left':'90%'})
-                    ]),
                     html.Div(style={'margin-top':'10px'},children=[
                         dash_table.DataTable(
                             df_order.to_dict('records'), [{"name": i, "id": i} for i in df_order.columns],
@@ -388,12 +403,14 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
+                            filter_action='native',
                             id='order_tbl'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_order', n_clicks=0, style=button_style),
                     html.Button('Save', id='save_to_postgres_order', n_clicks=0, style=button_style),
-                    html.Div([],'placeholder_order')
+                    html.Div([],'placeholder_order'),
+                    dcc.Graph(id='order_graph')
                 ]
             ),
             dcc.Tab(
@@ -410,12 +427,16 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
-                            id='employee_tbl'
+                            id='employee_tbl',
+                            filter_action = 'native'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_employee', n_clicks=0, style=button_style),
                     html.Button('Save', id='save_to_postgres_employee', n_clicks=0, style=button_style),
-                    html.Div([],'placeholder_employee')
+                    html.Div([],'placeholder_employee'),
+                    dcc.Graph(id='employee_graph'),
+                    dcc.Graph(id='employee_graph_2'),
+                    dcc.Graph(id='employee_graph_3')
                 ]
             ),
             dcc.Tab(
@@ -432,7 +453,8 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
-                            id='supplier_tbl'
+                            id='supplier_tbl',
+                            filter_action = 'native'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_supplier', n_clicks=0, style=button_style),
@@ -454,7 +476,8 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
-                            id='repair_tbl'
+                            id='repair_tbl',
+                            filter_action = 'native'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_repair', n_clicks=0, style=button_style),
@@ -476,7 +499,8 @@ app.layout = html.Div(children=[
                             style_cell=style_cell,
                             style_header=tbl_header_style,
                             style_as_list_view=True,
-                            id='gift_tbl'
+                            id='gift_tbl',
+                            filter_action = 'native'
                         )
                     ]),
                     html.Button('Add row', id='edit_rows_button_gift', n_clicks=0, style=button_style),
@@ -489,6 +513,121 @@ app.layout = html.Div(children=[
 ])
 
 ##########################################################################################################################
+@app.callback(
+    [Output('bike_graph','figure')],
+    [Input('bike_tbl','data'),
+    State('bike_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_bike_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repair_shop_id','supplier_id'])
+    valueList = []
+    for i in list(df.repair_status.unique()):
+        s = (df.repair_status == i).sum()
+        valueList.append(s)
+    fig = go.Figure([go.Bar(x=list(df.repair_status.unique()), y=valueList)])
+    fig.update_traces(opacity=0.6)
+    fig.update_layout(title_text='Fleet repair status',xaxis_title="repair status",yaxis_title="count",)
+    return [fig]
+
+@app.callback(
+    [Output('customer_graph','figure')],
+    [Input('customer_tbl','data'),
+    State('customer_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_cust_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['customer_id','first name','last name','sex', 'age', 'email'])
+    valueList = []
+    for i in list(df.sex.unique()):
+        s = (df.sex == i).sum()
+        valueList.append(s)
+    fig = go.Figure([go.Bar(x=list(df.sex.unique()), y=valueList)])
+    fig.update_traces(opacity=0.6)
+    fig.update_layout(title_text='Customer gender distribution',xaxis_title="sex",yaxis_title="count",)
+    return [fig]
+
+@app.callback(
+    [Output('customer_graph_2','figure')],
+    [Input('customer_tbl','data'),
+    State('customer_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_cust2_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['customer_id','first name','last name','sex', 'age', 'email'])
+    
+    fig = px.histogram(df, x='age',
+    title='Customer age distribution',
+    opacity=0.6)
+    return [fig]
+
+@app.callback(
+    [Output('order_graph','figure')],
+    [Input('order_tbl','data'),
+    State('order_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_cust_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['order_id','payment','customer_id','giftbox_id'])
+    valueList = []
+    for i in list(df.payment.unique()):
+        s = (df.payment == i).sum()
+        valueList.append(s)
+    fig = go.Figure([go.Bar(x=list(df.payment.unique()), y=valueList)])
+    fig.update_traces(opacity=0.6)
+    fig.update_layout(title_text='Payment method distribution',xaxis_title="payment",yaxis_title="count",)
+    return [fig]
+
+@app.callback(
+    [Output('employee_graph','figure')],
+    [Input('employee_tbl','data'),
+    State('employee_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_cust_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['employee_id','first_name','last_name','sex', 'age','e-mail', 'income_per_year','department_id'])
+    valueList = []
+    for i in list(df.sex.unique()):
+        s = (df.sex == i).sum()
+        valueList.append(s)
+    fig = go.Figure([go.Bar(x=list(df.sex.unique()), y=valueList)])
+    fig.update_traces(opacity=0.6)
+    fig.update_layout(title_text='Employee gender distribution',xaxis_title="sex",yaxis_title="count",)
+    return [fig]
+
+@app.callback(
+    [Output('employee_graph_2','figure')],
+    [Input('employee_tbl','data'),
+    State('employee_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_cust2_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['employee_id','first_name','last_name','sex', 'age','e-mail', 'income_per_year','department_id'])
+    
+    fig = px.histogram(df, x='age',
+    title='Employee age distribution',
+    opacity=0.6)
+    return [fig]
+
+@app.callback(
+    [Output('employee_graph_3','figure')],
+    [Input('employee_tbl','data'),
+    State('employee_tbl','columns')],
+    prevent_initial_call=False
+)
+def make_cust2_graph(data, columns):
+    df = pd.DataFrame(data = data, columns = ['employee_id','first_name','last_name','sex', 'age','e-mail', 'income_per_year','department_id'])
+    df_male = df[df.sex=='male']
+    df_female = df[df.sex=='female']
+    fig = go.Figure([go.Bar(x=['male','female'], y=[df_male.income_per_year.mean(), df_female.income_per_year.mean()])])
+    fig.update_traces(opacity=0.6)
+    fig.update_layout(title_text='Gender Pay Gap',xaxis_title="sex",yaxis_title="average salary",)
+    return [fig]
+
+
+
+
+
 
 @app.callback(
     [Output('placeholder_bike','children'),
@@ -514,7 +653,7 @@ def update_pg(n_clicks_save, n_clicks_add, rows, columns):
             cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cur.execute('SELECT * FROM bike')
             data = cur.fetchall()
-            df_bike = pd.DataFrame(data=data, columns=['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repair_shop_id','supplier_id'])
+            df_bike = pd.DataFrame(data=data, columns=['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repairshop_id','supplier_id'])
             #print(rows)
             if n_clicks_save > 0:
                 ins_list, del_list, change_id_list, change_column_list, change_value_list = make_ins_del_list(rows,df_bike,'bike_id')
@@ -553,7 +692,7 @@ def update_pg(n_clicks_save, n_clicks_add, rows, columns):
             
             cur.execute('SELECT * FROM bike')
             data = cur.fetchall()
-            df_bike = pd.DataFrame(data=data, columns=['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repair_shop_id','supplier_id'])
+            df_bike = pd.DataFrame(data=data, columns=['bike_id','brand','model', 'rent_fee_per_day','repair_status','order_id','repairshop_id','supplier_id'])
             rows = df_bike.to_dict('records')
 
             return output_pos, rows
@@ -577,6 +716,7 @@ def update_pg(n_clicks_save, n_clicks_add, rows, columns):
             rows.append({c['id']: '' for c in columns})
         return html.Div([]), rows
 
+    
 @app.callback(
     [Output('placeholder_customer','children'),
     Output('customer_tbl','data')],
@@ -736,8 +876,7 @@ def update_pg(n_clicks_save, n_clicks_add, rows, columns):
             return output_neg, rows
         finally:
             if cur is not None:
-                cur.close()
-                conn.close()
+                disconnect(conn,cur)
                 
 
     elif button_clicked == 'edit_rows_button_order':
@@ -745,7 +884,6 @@ def update_pg(n_clicks_save, n_clicks_add, rows, columns):
         if n_clicks_add > 0:
             rows.append({c['id']: '' for c in columns})
         return html.Div([]), rows
-
 
 @app.callback(
     [Output('placeholder_employee','children'),
