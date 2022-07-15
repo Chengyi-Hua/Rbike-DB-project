@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:latest
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_DB=rbike
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - ./sql/creating_data_table.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./sql/inserting_data.sql:/docker-entrypoint-initdb.d/2-data.sql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 1234:8080
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db

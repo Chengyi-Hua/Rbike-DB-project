@@ -1,0 +1,8 @@
+dash==2.5.1
+jupyter-dash==0.4.2
+jupyter_client==7.3.4
+jupyter_core==4.10.0
+jupyterlab_pygments==0.2.2
+jupyterlab_widgets==1.1.1
+plotly==5.0.0
+psycopg2==2.9.3
